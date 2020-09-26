@@ -4,6 +4,7 @@ namespace CalcularData
 {
     class FuncaoData : InterfaceData
     {
+        #region declarando variáveis públicas
         public string dia { get; set; }
         public string mes { get; set; }
         public string ano { get; set; }
@@ -11,12 +12,13 @@ namespace CalcularData
         public string minutos { get; set; }
         public string minutos_a_alterar { get; set; }
         public string operacao { get; set; }
+        #endregion
 
+        #region declarando variáveis estáticas
         static int minutos_ano { get; set; }
         static int minutos_dia { get; set; }
         static int minutos_hora { get; set; }
         static int total_datahora_em_minutos { get; set; }
-
         static int quociente_divisao_ano { get; set; }
         static int resto_divisao_ano { get; set; }
         static int quociente_divisao_dia { get; set; }
@@ -25,13 +27,17 @@ namespace CalcularData
         static int resto_divisao_hora { get; set; }
         static int calcula_dia_do_mes { get; set; }
         static int calcula_mes { get; set; }
+        #endregion
 
+        #region declarando constantes
         const int anoMinutos = 527040;     // ajuste para considerar 366 dias no ano para funcionar para os últimos 2 dias do ano
         const int diaMinutos = 1440;
         const int horaMinutos = 60;
+        #endregion
 
         public string CalcularData(string data, char op, long valor)
         {
+            // captura o que foi passado como parâmetros
             dia = data.Split(new char[] { '/', ' ', ':' }, 5)[0];
             mes = data.Split(new char[] { '/', ' ', ':' }, 5)[1];
             ano = data.Split(new char[] { '/', ' ', ':' }, 5)[2];
@@ -39,10 +45,10 @@ namespace CalcularData
             minutos = data.Split(new char[] { '/', ' ', ':' }, 5)[4];
 
             operacao = op.ToString();
-            valor = (valor < 0 ? valor * -1 : valor);
 
-            minutos_a_alterar = valor.ToString();
+            minutos_a_alterar = (valor < 0 ? valor * -1 : valor).ToString();
 
+            // converte a data em minutos (valores inteiros)
             TotalMinutosConvertidopelaDataHora();
 
             // retorna em formato data e hora
@@ -54,6 +60,7 @@ namespace CalcularData
                 resto_divisao_hora.ToString().PadLeft(2, '0'));
         }
 
+        #region métodos de auxílio para cálculo da data
         private void TotalMinutosConvertidopelaDataHora()
         {
             ConverterAnoemMinutos();
@@ -162,6 +169,7 @@ namespace CalcularData
             quociente_divisao_hora = resto_divisao_dia / horaMinutos;
             resto_divisao_hora = resto_divisao_dia % horaMinutos;
         }
+        #endregion
     }
 
 }
