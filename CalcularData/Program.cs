@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CalcularData
 {
@@ -36,7 +31,7 @@ namespace CalcularData
                 FuncaoData dataCalculada = new FuncaoData();
 
                 string resultado = dataCalculada.CalcularData(data, operacao, valor);
-                Console.WriteLine("\n\nO resultado é " + resultado);
+                Console.WriteLine("\n\n" + resultado);
                 Console.ReadLine();
             }
         }

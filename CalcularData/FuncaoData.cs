@@ -11,7 +11,7 @@ namespace CalcularData
         public string hora { get; set; }
         public string minutos { get; set; }
         public string minutos_a_alterar { get; set; }
-        public string operacao { get; set; }
+        public string soma_ou_subtrai { get; set; }
         #endregion
 
         #region declarando variáveis estáticas
@@ -30,13 +30,43 @@ namespace CalcularData
         #endregion
 
         #region declarando constantes
-        const int anoMinutos = 527040;     // ajuste para considerar 366 dias no ano para funcionar para os últimos 2 dias do ano
-        const int diaMinutos = 1440;
-        const int horaMinutos = 60;
+        const int anoMinutos = 527040;      // considerando 366 dias para funcionar para os últimos dias do ano
+        const int diaMinutos = 1440;        // minutos em um dia
+        const int horaMinutos = 60;         // minutos em uma hora
         #endregion
 
-        public string CalcularData(string data, char op, long valor)
+        /// <summary>
+        /// método desenvolvido por Marcio Coelho para efeito de avaliação
+        /// github: https://github.com/marciocoelho31
+        /// data: 27/09/2020
+        /// </summary>
+        /// <param name="data">Uma data em forma de String formatada no padrão "dd/MM/yyyy HH:mm"</param>
+        /// <param name="operacao">Só poderá aceitar os caracteres ‘+’ e ‘-’</param>
+        /// <param name="valor">Valor em minutos que deve ser acrescentado ou decrementado</param>
+        /// <returns>
+        /// Regras e Restrições:
+        /// - Não é permitida a utilização de qualquer classe ou biblioteca não nativa
+        /// - Não é permitida a utilização das classes DateTime e TimeSpan
+        /// - Se o valor for menor que zero, o sinal deve ser ignorado(tratar como positivo)
+        /// - Ignore o fato de fevereiro poder possuir 28 ou 29 dias. Considere-o sempre com 28
+        /// - Ignore a existência de horário de verão
+        /// 
+        /// Exemplo de retorno: CalcularData("01/03/2010 23:00", '+', 4000) = "04/03/2010 17:40"
+        /// </returns>
+        public string CalcularData(string data, char operacao, long valor)
         {
+            // valida a operação, só é permitido acrescentar ou decrementar
+            if (operacao.ToString() != "+" && operacao.ToString() != "-")
+            {
+                return "Operação inválida";
+            }
+
+            // valida o tamanho do campo da data
+            if (data.Length != 16)
+            {
+                return "Data inválida - digite a data e hora no formato dd/MM/yyyy HH:mm";
+            }
+
             // captura o que foi passado como parâmetros
             dia = data.Split(new char[] { '/', ' ', ':' }, 5)[0];
             mes = data.Split(new char[] { '/', ' ', ':' }, 5)[1];
@@ -44,15 +74,16 @@ namespace CalcularData
             hora = data.Split(new char[] { '/', ' ', ':' }, 5)[3];
             minutos = data.Split(new char[] { '/', ' ', ':' }, 5)[4];
 
-            operacao = op.ToString();
+            soma_ou_subtrai = operacao.ToString();
 
+            // Se o valor for menor que zero, o sinal deve ser ignorado (tratar como positivo)
             minutos_a_alterar = (valor < 0 ? valor * -1 : valor).ToString();
 
             // converte a data em minutos (valores inteiros)
             TotalMinutosConvertidopelaDataHora();
 
             // retorna em formato data e hora
-            return String.Format("{0}/{1}/{2} {3}:{4}",
+            return String.Format("O resultado é {0}/{1}/{2} {3}:{4}",
                 calcula_dia_do_mes.ToString().PadLeft(2, '0'),
                 calcula_mes.ToString().PadLeft(2, '0'),
                 quociente_divisao_ano.ToString().PadLeft(4, '0'),
@@ -70,7 +101,7 @@ namespace CalcularData
             ConverterHoraEmMinutos();
 
             total_datahora_em_minutos = minutos_ano + minutos_dia + minutos_hora
-                + Convert.ToInt32(minutos_a_alterar) * (operacao == "+" ? 1 : -1);
+                + Convert.ToInt32(minutos_a_alterar) * (soma_ou_subtrai == "+" ? 1 : -1);
 
             ConverterMinutosEmAno();
         }
@@ -126,6 +157,27 @@ namespace CalcularData
 
             minutos_dia = diaMes * diaMinutos + Convert.ToInt32(dia) * diaMinutos;
 
+            if (soma_ou_subtrai == "-")
+            {
+                // verificando quando o cálculo diminui o valor do ano para a nova data, para calcular corretamente o dia
+                int minutos_dia_aux = diaMes * diaMinutos + Convert.ToInt32(dia) * diaMinutos - diaMinutos;
+                int minutos_hora_aux = Convert.ToInt32(hora) * horaMinutos + Convert.ToInt32(minutos);
+                int total_datahora_em_minutos_aux = minutos_ano + minutos_dia_aux + minutos_hora_aux + Convert.ToInt32(minutos_a_alterar) * -1;
+                if (total_datahora_em_minutos_aux < minutos_ano)
+                {
+                    minutos_dia -= diaMinutos;
+                }
+            }
+            else
+            {
+                // verificando quando o cálculo aumenta o valor do ano para a nova data, para calcular corretamente o dia
+                int minutos_hora_aux = Convert.ToInt32(hora) * horaMinutos + Convert.ToInt32(minutos);
+                int total_datahora_em_minutos_aux = minutos_ano + minutos_dia + minutos_hora_aux + Convert.ToInt32(minutos_a_alterar);
+                if (total_datahora_em_minutos_aux > minutos_ano + anoMinutos)
+                {
+                    minutos_dia += diaMinutos;
+                }
+            }
         }
 
         private void ConverterHoraEmMinutos()
@@ -140,6 +192,7 @@ namespace CalcularData
 
             ConverterMinutosEmDia();
         }
+
         private void ConverterMinutosEmDia()
         {
             quociente_divisao_dia = resto_divisao_ano / diaMinutos;
@@ -212,6 +265,7 @@ namespace CalcularData
 
             ConverterMinutosEmHora();
         }
+
         private void ConverterMinutosEmHora()
         {
             quociente_divisao_hora = resto_divisao_dia / horaMinutos;
@@ -219,6 +273,7 @@ namespace CalcularData
 
 
         }
+
         #endregion
     }
 
