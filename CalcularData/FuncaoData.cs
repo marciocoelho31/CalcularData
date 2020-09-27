@@ -63,31 +63,29 @@ namespace CalcularData
         #region métodos de auxílio para cálculo da data
         private void TotalMinutosConvertidopelaDataHora()
         {
-            ConverterAnoemMinutos();
+            ConverterAnoEmMinutos();
 
-            ConverterDiaemMinutos();
+            ConverterDiaEmMinutos();
 
-            ConverterDataHoraemMinutos();
+            ConverterHoraEmMinutos();
 
-            total_datahora_em_minutos = minutos_ano + minutos_dia + minutos_hora;
+            total_datahora_em_minutos = minutos_ano + minutos_dia + minutos_hora
+                + Convert.ToInt32(minutos_a_alterar) * (operacao == "+" ? 1 : -1);
 
-            ConverterMinutosemAno();
+            ConverterMinutosEmAno();
         }
 
-        private void ConverterAnoemMinutos()
+        private void ConverterAnoEmMinutos()
         {
             minutos_ano = Convert.ToInt32(ano) * anoMinutos;
         }
 
-        private void ConverterDiaemMinutos()
+        private void ConverterDiaEmMinutos()
         {
             int diaMes;
 
             switch (mes)
             {
-                case "01":
-                    diaMes = 0;
-                    break;
                 case "02":
                     diaMes = 31;
                     break;
@@ -130,44 +128,96 @@ namespace CalcularData
 
         }
 
-        private void ConverterDataHoraemMinutos()
+        private void ConverterHoraEmMinutos()
         {
-            minutos_hora = Convert.ToInt32(hora) * horaMinutos + Convert.ToInt32(minutos)
-                + Convert.ToInt32(minutos_a_alterar) * (operacao == "+" ? 1 : -1);
+            minutos_hora = Convert.ToInt32(hora) * horaMinutos + Convert.ToInt32(minutos);
         }
 
-        private void ConverterMinutosemAno()
+        private void ConverterMinutosEmAno()
         {
             quociente_divisao_ano = total_datahora_em_minutos / anoMinutos;
             resto_divisao_ano = total_datahora_em_minutos % anoMinutos;
-            ConverterMinutosemDia();
+
+            ConverterMinutosEmDia();
         }
-        private void ConverterMinutosemDia()
+        private void ConverterMinutosEmDia()
         {
             quociente_divisao_dia = resto_divisao_ano / diaMinutos;
             resto_divisao_dia = resto_divisao_ano % diaMinutos;
 
             if (quociente_divisao_dia == 0) quociente_divisao_dia = 1;
 
-            if (quociente_divisao_dia <= 31) { calcula_mes = 1; calcula_dia_do_mes = quociente_divisao_dia; }
-            if (quociente_divisao_dia >= 32 && quociente_divisao_dia < 60) { calcula_mes = 2; calcula_dia_do_mes = quociente_divisao_dia - 32 + 1; }
-            if (quociente_divisao_dia >= 60 && quociente_divisao_dia < 91) { calcula_mes = 3; calcula_dia_do_mes = quociente_divisao_dia - 60 + 1; }
-            if (quociente_divisao_dia >= 91 && quociente_divisao_dia < 121) { calcula_mes = 4; calcula_dia_do_mes = quociente_divisao_dia - 91 + 1; }
-            if (quociente_divisao_dia >= 121 && quociente_divisao_dia < 152) { calcula_mes = 5; calcula_dia_do_mes = quociente_divisao_dia - 121 + 1; }
-            if (quociente_divisao_dia >= 152 && quociente_divisao_dia < 182) { calcula_mes = 6; calcula_dia_do_mes = quociente_divisao_dia - 152 + 1; }
-            if (quociente_divisao_dia >= 182 && quociente_divisao_dia < 213) { calcula_mes = 7; calcula_dia_do_mes = quociente_divisao_dia - 182 + 1; }
-            if (quociente_divisao_dia >= 213 && quociente_divisao_dia < 244) { calcula_mes = 8; calcula_dia_do_mes = quociente_divisao_dia - 213 + 1; }
-            if (quociente_divisao_dia >= 244 && quociente_divisao_dia < 274) { calcula_mes = 9; calcula_dia_do_mes = quociente_divisao_dia - 244 + 1; }
-            if (quociente_divisao_dia >= 274 && quociente_divisao_dia < 305) { calcula_mes = 10; calcula_dia_do_mes = quociente_divisao_dia - 274 + 1; }
-            if (quociente_divisao_dia >= 305 && quociente_divisao_dia < 335) { calcula_mes = 11; calcula_dia_do_mes = quociente_divisao_dia - 305 + 1; }
-            if (quociente_divisao_dia >= 335 && quociente_divisao_dia <= 365) { calcula_mes = 12; calcula_dia_do_mes = quociente_divisao_dia - 335 + 1; }
+            #region calcula mês e dia do mês
+            if (quociente_divisao_dia <= 31)
+            {
+                calcula_mes = 1;
+                calcula_dia_do_mes = quociente_divisao_dia;
+            }
+            if (quociente_divisao_dia >= 32 && quociente_divisao_dia < 60)
+            {
+                calcula_mes = 2;
+                calcula_dia_do_mes = quociente_divisao_dia - 32 + 1;
+            }
+            if (quociente_divisao_dia >= 60 && quociente_divisao_dia < 91)
+            {
+                calcula_mes = 3;
+                calcula_dia_do_mes = quociente_divisao_dia - 60 + 1;
+            }
+            if (quociente_divisao_dia >= 91 && quociente_divisao_dia < 121)
+            {
+                calcula_mes = 4;
+                calcula_dia_do_mes = quociente_divisao_dia - 91 + 1;
+            }
+            if (quociente_divisao_dia >= 121 && quociente_divisao_dia < 152)
+            {
+                calcula_mes = 5;
+                calcula_dia_do_mes = quociente_divisao_dia - 121 + 1;
+            }
+            if (quociente_divisao_dia >= 152 && quociente_divisao_dia < 182)
+            {
+                calcula_mes = 6;
+                calcula_dia_do_mes = quociente_divisao_dia - 152 + 1;
+            }
+            if (quociente_divisao_dia >= 182 && quociente_divisao_dia < 213)
+            {
+                calcula_mes = 7;
+                calcula_dia_do_mes = quociente_divisao_dia - 182 + 1;
+            }
+            if (quociente_divisao_dia >= 213 && quociente_divisao_dia < 244)
+            {
+                calcula_mes = 8;
+                calcula_dia_do_mes = quociente_divisao_dia - 213 + 1;
+            }
+            if (quociente_divisao_dia >= 244 && quociente_divisao_dia < 274)
+            {
+                calcula_mes = 9;
+                calcula_dia_do_mes = quociente_divisao_dia - 244 + 1;
+            }
+            if (quociente_divisao_dia >= 274 && quociente_divisao_dia < 305)
+            {
+                calcula_mes = 10;
+                calcula_dia_do_mes = quociente_divisao_dia - 274 + 1;
+            }
+            if (quociente_divisao_dia >= 305 && quociente_divisao_dia < 335)
+            {
+                calcula_mes = 11;
+                calcula_dia_do_mes = quociente_divisao_dia - 305 + 1;
+            }
+            if (quociente_divisao_dia >= 335)
+            {
+                calcula_mes = 12;
+                calcula_dia_do_mes = quociente_divisao_dia - 335 + 1;
+            }
+            #endregion 
 
-            ConverterMinutosemHora();
+            ConverterMinutosEmHora();
         }
-        private void ConverterMinutosemHora()
+        private void ConverterMinutosEmHora()
         {
             quociente_divisao_hora = resto_divisao_dia / horaMinutos;
             resto_divisao_hora = resto_divisao_dia % horaMinutos;
+
+
         }
         #endregion
     }
